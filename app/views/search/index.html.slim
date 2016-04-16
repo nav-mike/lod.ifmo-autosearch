@@ -1,0 +1,13 @@
+.container style='padding-top: 25px'
+  .row.vcenter
+    .search-logo
+      .text-center
+        .logo.main
+          img src="#{asset_path 'logo.png'}"
+
+    form role='form' method='GET' action='search' novalidate=true
+      .input-group
+        input.form-control type='text' name='q' placeholder='Search...'
+        span.input-group-btn
+          button.btn.btn-default type='button' Search
+
