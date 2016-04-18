@@ -3,34 +3,20 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
 $(document).ready () ->
-  substringMatcher = (strs) ->
-    return (q, cb) ->
-      matches = []
-      substrRegex = new RegExp(q, 'i')
-
-      $.each(strs, (i, str) ->
-        if substrRegex.test(str)
-          matches.push str
-        return
-      )
-
-      cb(matches)
-      return
-
-  states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 
-            'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 
-            'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 
-            'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 
-            'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 
-            'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 
-            'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 
-            'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 
-            'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 
-            'West Virginia', 'Wisconsin', 'Wyoming']
-
-  $('#search').typeahead({
-    source: states
-  })
+  $input = $('#search')
+  $input.typeahead({
+    source: [{id: "someId1", name: "Display name 1"},{id: "someId2", name: "Display name 2"}],
+  autoSelect: true})
+  $input.change(->
+    current = $input.typeahead("getActive")
+    if current
+      if current.name == $input.val()
+        console.log "redirect to #{current}"
+      else
+        console.log "not redirect to #{current}"
+    else
+      console.log "fail #{current}"
+  )
 
   return
 
