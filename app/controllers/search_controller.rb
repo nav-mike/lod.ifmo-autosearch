@@ -1,5 +1,26 @@
+require 'rdf/virtuoso'
+
 class SearchController < ApplicationController
   def index
+  end
+
+  private
+
+  def get_all_labs
+    uri = 'http://lod.ifmo.ru/sparql'
+    repo = RDF::Virtuoso::Repository.new(uri)
+    QUERY = RDF::Virtuoso::Query
+    graph = RDF::URI.new('http://lod.ifmo.ru')
+
+    query = QUERY.select(:department, :name)
+                 .distinct
+                 .where(
+                   [:department, RDF::URI.new('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), RDF::URI.new('http://vivoplus.aksw.org/ontology#Laboratory')],
+                   [:department, RDF::URI.new('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), RDF::URI.new('http://vivoweb.org/ontology/core#Laboratory')],
+                   [:department, RDF::URI.new('http://www.w3.org/2000/01/rdf-schema#label'), :name]
+                ).graph(graph)
+
+    result = repo.select(query) # array of hashes
   end
 
   # get all laboratories
