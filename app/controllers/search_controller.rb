@@ -3,6 +3,13 @@ require 'rdf/virtuoso'
 class SearchController < ApplicationController
   def index
   end
+  
+  def data
+    @labs = get_all_labs
+    @people = get_all_people
+    
+    @result = @labs | @people
+  end
 
   private
 
@@ -16,18 +23,19 @@ class SearchController < ApplicationController
   def get_all_labs
     uri = 'http://lod.ifmo.ru/sparql'
     repo = RDF::Virtuoso::Repository.new(uri)
-    QUERY = RDF::Virtuoso::Query
+    q = RDF::Virtuoso::Query
     graph = RDF::URI.new('http://lod.ifmo.ru')
 
-    query = QUERY.select(:department, :name)
-                 .distinct
-                 .where(
-                   [:department, RDF::URI.new('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), RDF::URI.new('http://vivoplus.aksw.org/ontology#Laboratory')],
-                   [:department, RDF::URI.new('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), RDF::URI.new('http://vivoweb.org/ontology/core#Laboratory')],
-                   [:department, RDF::URI.new('http://www.w3.org/2000/01/rdf-schema#label'), :name]
+    query = q.select(:department, :name)
+                .distinct
+                .where(
+                  [:department, RDF::URI.new('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), RDF::URI.new('http://vivoplus.aksw.org/ontology#Laboratory')],
+                  [:department, RDF::URI.new('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), RDF::URI.new('http://vivoweb.org/ontology/core#Laboratory')],
+                  [:department, RDF::URI.new('http://www.w3.org/2000/01/rdf-schema#label'), :name]
                 ).graph(graph)
 
     result = repo.select(query) # array of hashes
+    result.to_a
   end
 
   # get all people
@@ -42,19 +50,20 @@ class SearchController < ApplicationController
   def get_all_people
     uri = 'http://lod.ifmo.ru/sparql'
     repo = RDF::Virtuoso::Repository.new(uri)
-    QUERY = RDF::Virtuoso::Query
+    q = RDF::Virtuoso::Query
     graph = RDF::URI.new('http://lod.ifmo.ru')
 
-    query = QUERY.select(:person, :first_name, :middle_name, :last_name)
-                 .distinct
-                 .where(
-                   [:person, RDF::URI.new('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), RDF::URI.new('http://xmlns.com/foaf/0.1/Person')],
-                   [:person, RDF::URI.new('http://xmlns.com/foaf/0.1/firstName'), :first_name],
-                   [:person, RDF::URI.new('http://vivoweb.org/ontology/core#middleName'), :middle_name],
-                   [:person, RDF::URI.new('http://xmlns.com/foaf/0.1/lastName'), :last_name]
-                 ).graph(graph)
+    query = q.select(:person, :first_name, :middle_name, :last_name)
+                .distinct
+                .where(
+                  [:person, RDF::URI.new('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), RDF::URI.new('http://xmlns.com/foaf/0.1/Person')],
+                  [:person, RDF::URI.new('http://xmlns.com/foaf/0.1/firstName'), :first_name],
+                  [:person, RDF::URI.new('http://vivoweb.org/ontology/core#middleName'), :middle_name],
+                  [:person, RDF::URI.new('http://xmlns.com/foaf/0.1/lastName'), :last_name]
+                ).graph(graph)
 
     result = repo.select(query)
+    result.to_a
   end
 
   # get all research area
