@@ -2,6 +2,11 @@ require 'rdf/virtuoso'
 
 class SearchController < ApplicationController
   def index
+    labs = get_all_labs
+    people = get_all_people
+    rarea = get_all_research_area
+    
+    @result = labs | people | rarea
   end
   
   def data
