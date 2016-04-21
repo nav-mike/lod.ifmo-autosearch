@@ -3,11 +3,24 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
 $(document).ready () ->
+  $('.js-loading-bar').modal
+    backdrop: 'static'
+    show: false
+    
+  $modal = $('.js-loading-bar')
+  $bar = $modal.find('.progress-bar')
+  $modal.modal 'show'
+  $bar.addClass 'animate'
   $.ajax({
     url: '/data.json',
     dataType: 'json',
     success: (data) ->
       console.log data
+      setTimeout (->
+        $bar.removeClass 'animate'
+        $modal.modal 'hide'
+        return
+      ), 1500
       
       $input = $('#search')
       $input.typeahead({
