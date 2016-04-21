@@ -17,7 +17,7 @@ $(document).ready () ->
         current = $input.typeahead("getActive")
         if current
           if current.name == $input.val()
-            console.log "redirect to #{current}"
+            window.location.href = current.id
           else
             console.log "not redirect to #{current}"
         else
