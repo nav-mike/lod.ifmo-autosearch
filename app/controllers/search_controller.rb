@@ -5,10 +5,11 @@ class SearchController < ApplicationController
   end
   
   def data
-    @labs = get_all_labs
-    @people = get_all_people
+    labs = get_all_labs
+    people = get_all_people
+    rarea = get_all_research_area
     
-    @result = @labs | @people
+    @result = labs | people | rarea
   end
 
   private
@@ -73,4 +74,20 @@ class SearchController < ApplicationController
   #   ?researchArea a vivoplus:ResearchArea;
   #                 rdfs:label ?label.
   # }
+  def get_all_research_area
+    uri = 'http://lod.ifmo.ru/sparql'
+    repo = RDF::Virtuoso::Repository.new(uri)
+    q = RDF::Virtuoso::Query
+    graph = RDF::URI.new('http://lod.ifmo.ru')
+    
+    query = q.select(:research_area, :label)
+                .distinct
+                .where(
+                  [:research_area, RDF::URI.new('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), RDF::URI.new('http://vivoplus.aksw.org/ontology#ResearchArea')],
+                  [:research_area, RDF::URI.new('http://www.w3.org/2000/01/rdf-schema#label'), :label]
+                ).graph(graph)
+                
+    result = repo.select(query)
+    result.to_a
+  end
 end
